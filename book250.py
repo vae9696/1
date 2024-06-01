@@ -11,7 +11,8 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='utf8')  #改变标准�
 
 
 
-def Get_PageInfo(url,is_print_log):
+def Get_PageInfo(url,start_page,is_print_log):
+    url = url + str(start_page)
     user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36 Edg/125.0.0.0"
     headers = {
         'User-Agent': user_agent,
@@ -102,22 +103,39 @@ def Get_PageInfo(url,is_print_log):
     loop_numbers1 = 0
     #print(name_list)
     for item_dict in info_list:
+        item_dict.setdefault("No.",int(start_page) + loop_numbers1 + 1)
         item_dict.setdefault("book_name", name_list[loop_numbers1])
         loop_numbers1 += 1
 
     if(is_print_log):
         for i in range(len(info_list)):
             print("{i}: {n}".format(i = i ,n = info_list[i]))
+    
+    return info_list
 
     response.close()
 
-def main():
-    url = "https://book.douban.com/top250?start="
+def show_bar(url):
     with alive_bar(10,title = "Get_PageInfo: ") as bar:
         for i in range(0,250,25):
-            Get_PageInfo(url + str(i),False)
+            Get_PageInfo(url,str(i),False)
             print("Finish page {n}.".format(n = int((i+25)/25)))
             bar()
+
+def main():
+    url = "https://book.douban.com/top250?start="
+    page_list = []
+    start_page = 0
+    end_page = 25
+    for i in range(start_page,end_page,25):
+        page_list.append(Get_PageInfo(url,str(i),False))
+    #[[page1-dicts], [page2-dicts], [....], [.....], ....]
+    print(page_list[0][0])
+    print(page_list[0][24])
+
+
+    
+
 
 
 
